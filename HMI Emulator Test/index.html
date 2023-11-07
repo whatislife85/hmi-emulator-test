@@ -18,6 +18,8 @@ canvas { display: block; margin: 0 auto; background: #444444; }
 <body>
 
 <canvas> </canvas>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
+<script type="text/javascript" src="DoasMenu.txt"></script>
 <script>
 // namespace our game
 var HMI = {
@@ -40,6 +42,9 @@ var HMI = {
     // in relation to the screen
     offset: {top: 0, left: 0},
 
+    menuTree: DoasMenu.MenuItems[0],
+    menuPath: [],
+
     init: function() {
 
         // the proportion of width to height
@@ -61,14 +66,8 @@ var HMI = {
         // we're ready to resize
         HMI.resize();
 
-        HMI.Draw.clear();
-        HMI.Draw.rect(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, '#D3D3D3');
-        HMI.Draw.circle(HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(7*HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(7*HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        //HMI.Draw.circle(100, 100, 50, 'rgba(255,0,0,0.5)');
-        HMI.Draw.text('CaptiveAire HMI Emulator Test', HMI.WIDTH/2, 4*HMI.HEIGHT/5, 12, '#000');
+        HMI.Draw.drawHmi();
+        HMI.Draw.text('IDLE', (8.5*HMI.WIDTH/20), HMI.HEIGHT/2, 54, '#000');
 
         // listen for clicks
         window.addEventListener('click', function(e) {
@@ -168,12 +167,24 @@ HMI.Draw = {
         HMI.ctx.font = 'bold '+size+'px Monospace';
         HMI.ctx.fillStyle = col;
         HMI.ctx.fillText(string, x, y);
+    },
+
+    drawHmi: function() {
+        HMI.Draw.clear();
+        HMI.Draw.rect(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, '#D3D3D3');
+        HMI.Draw.circle(HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(7*HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(7*HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.text('CaptiveAire HMI Emulator Test', HMI.WIDTH/2, 4*HMI.HEIGHT/5, 14, '#000');
+
     }
 
 };
 
 // + add this at the bottom of your code,
 // before the window.addEventListeners
+HMI.currentMenu = HMI.menuTree
 HMI.Input = {
     x: 0,
     y: 0,
@@ -184,13 +195,21 @@ HMI.Input = {
         this.y = (data.pageY - HMI.offset.top) / HMI.scale;
         this.tapped = true;
 
-        HMI.Draw.circle(this.x, this.y, 10, 'red');
+        HMI.Draw.drawHmi();
+        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
+        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
+        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
+        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
+        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
+        HMI.currentMenu = HMI.currentMenu.MenuItems[0];
+        console.log(String(HMI.currentMenu.Text).length);
     }
 
 };
 
 window.addEventListener('load', HMI.init, false);
 window.addEventListener('resize', HMI.resize, false);
+
 </script>
 
 </body>
