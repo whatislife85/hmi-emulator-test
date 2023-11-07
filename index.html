@@ -72,27 +72,26 @@ var HMI = {
         // listen for clicks
         window.addEventListener('click', function(e) {
             e.preventDefault();
-            HMI.Input.set(e);
+            HMI.Input.set([e]);
         }, false);
 
         // listen for touches
         window.addEventListener('touchstart', function(e) {
-            e.preventDefault();
+            //e.preventDefault();
             // the event object has an array
-            // named touches; we just want
-            // the first touch
-            HMI.Input.set(e.touches[0]);
+            // named touches (for multi-touch);
+            HMI.Input.set(e.touches);
         }, false);
         window.addEventListener('touchmove', function(e) {
             // we're not interested in this,
             // but prevent default behaviour
             // so the screen doesn't scroll
             // or zoom
-            e.preventDefault();
+            //e.preventDefault();
         }, false);
         window.addEventListener('touchend', function(e) {
             // as above
-            e.preventDefault();
+            //e.preventDefault();
         }, false);
     },
 
@@ -142,6 +141,74 @@ var HMI = {
     }
 };
 
+// FUN FUNCTIONS BEGIN //////////////////////////
+HMI.currentMenu = HMI.menuTree
+btnXY = [
+  [(HMI.WIDTH)/8, 3*(HMI.HEIGHT)/8], 
+  [(HMI.WIDTH/8), 5*(HMI.HEIGHT/8)], 
+  [7*(HMI.WIDTH/8), 3*(HMI.HEIGHT/8)], 
+  [7*(HMI.WIDTH/8), 5*(HMI.HEIGHT/8)]
+];
+btnR = HMI.WIDTH/20;
+
+function upBtnPressed() {
+  console.log("up")
+}
+function downBtnPressed() {
+  console.log("down")
+}
+function backBtnPressed() {
+  console.log("back")
+}
+function enterBtnPressed() {
+  console.log("enter")
+
+  //HMI.Draw.drawHmi();
+  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
+  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
+  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
+  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
+  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
+  //HMI.currentMenu = HMI.currentMenu.MenuItems[0];
+  //console.log(HMI.currentMenu);
+}
+
+function topBtnsPressed() {
+  HMI.Draw.drawHmi();
+  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
+  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
+  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
+  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
+  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
+  //HMI.currentMenu = HMI.currentMenu.MenuItems[0];
+  //console.log(HMI.currentMenu);
+  console.log("top buttons pressed");
+}
+
+function btnLogic(btnsPressed) {
+  if(btnsPressed.length == 1) {
+    switch(btnsPressed[0]) {
+      case 0:
+        upBtnPressed();
+        break;
+      case 1:
+        downBtnPressed();
+        break;
+      case 2:
+        backBtnPressed();
+        break;
+      case 3:
+        enterBtnPressed();
+        break;
+    }
+  }
+   else if((btnsPressed.length == 2 && btnsPressed.includes(0) && btnsPressed.includes(2))) {
+      topBtnsPressed();
+   }
+}
+
+// FUN FUNCTIONS END ///////////////////////////
+
 // abstracts various canvas operations into
 // standalone functions
 HMI.Draw = {
@@ -172,39 +239,39 @@ HMI.Draw = {
     drawHmi: function() {
         HMI.Draw.clear();
         HMI.Draw.rect(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, '#D3D3D3');
-        HMI.Draw.circle(HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(7*HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
-        HMI.Draw.circle(7*HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(btnXY[0][0], btnXY[0][1], btnR, 'black');
+        HMI.Draw.circle(btnXY[1][0], btnXY[1][1], btnR, 'black');
+        HMI.Draw.circle(btnXY[2][0], btnXY[2][1], btnR, 'black');
+        HMI.Draw.circle(btnXY[3][0], btnXY[3][1], btnR, 'black');
         HMI.Draw.text('CaptiveAire HMI Emulator Test', HMI.WIDTH/2, 4*HMI.HEIGHT/5, 14, '#000');
-
     }
 
 };
 
 // + add this at the bottom of your code,
 // before the window.addEventListeners
-HMI.currentMenu = HMI.menuTree
 HMI.Input = {
     x: 0,
     y: 0,
     tapped :false,
 
+    btnsPressed: [],
     set: function(data) {
-        this.x = (data.pageX - HMI.offset.left) / HMI.scale;
-        this.y = (data.pageY - HMI.offset.top) / HMI.scale;
+      //console.log(data);
+      for(j = 0; j < data.length; j++) {
+        this.x = (data[j].pageX - HMI.offset.left) / HMI.scale;
+        this.y = (data[j].pageY - HMI.offset.top) / HMI.scale;
         this.tapped = true;
 
-        HMI.Draw.drawHmi();
-        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
-        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
-        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
-        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
-        HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
-        HMI.currentMenu = HMI.currentMenu.MenuItems[0];
-        console.log(String(HMI.currentMenu.Text).length);
+        for(i = 0; i < btnXY.length; i++) {
+          if (Math.sqrt((this.x-btnXY[i][0])**2 + (this.y-btnXY[i][1])**2) < btnR) {
+            this.btnsPressed.push(i);
+          }
+        }
+      }
+      btnLogic(this.btnsPressed);
+      this.btnsPressed = [];
     }
-
 };
 
 window.addEventListener('load', HMI.init, false);
