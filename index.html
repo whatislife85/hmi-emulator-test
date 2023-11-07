@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 <style type="text/css">
-body { margin: 0; padding: 0; background: #000;}
-canvas { display: block; margin: 0 auto; background: #fff; }
+body { margin: 0; padding: 0; background: #000000;}
+canvas { display: block; margin: 0 auto; background: #444444; }
 </style>
 
 </head>
@@ -20,10 +20,10 @@ canvas { display: block; margin: 0 auto; background: #fff; }
 <canvas> </canvas>
 <script>
 // namespace our game
-var POP = {
+var HMI = {
 
     // set up some initial values
-    WIDTH: 320,
+    WIDTH: 800,
     HEIGHT:  480,
     // we'll set the rest of these
     // in the init function
@@ -43,33 +43,37 @@ var POP = {
     init: function() {
 
         // the proportion of width to height
-        POP.RATIO = POP.WIDTH / POP.HEIGHT;
+        HMI.RATIO = HMI.WIDTH / HMI.HEIGHT;
         // these will change when the screen is resized
-        POP.currentWidth = POP.WIDTH;
-        POP.currentHeight = POP.HEIGHT;
+        HMI.currentWidth = HMI.WIDTH;
+        HMI.currentHeight = HMI.HEIGHT;
         // this is our canvas element
-        POP.canvas = document.getElementsByTagName('canvas')[0];
+        HMI.canvas = document.getElementsByTagName('canvas')[0];
         // setting this is important
         // otherwise the browser will
         // default to 320 x 200
-        POP.canvas.width = POP.WIDTH;
-        POP.canvas.height = POP.HEIGHT;
+        HMI.canvas.width = HMI.WIDTH;
+        HMI.canvas.height = HMI.HEIGHT;
         // the canvas context enables us to
         // interact with the canvas api
-        POP.ctx = POP.canvas.getContext('2d');
+        HMI.ctx = HMI.canvas.getContext('2d');
 
         // we're ready to resize
-        POP.resize();
+        HMI.resize();
 
-        POP.Draw.clear();
-        POP.Draw.rect(120,120,150,150, 'green');
-        POP.Draw.circle(100, 100, 50, 'rgba(255,0,0,0.5)');
-        POP.Draw.text('Hello World', 100, 100, 10, '#000');
+        HMI.Draw.clear();
+        HMI.Draw.rect(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, '#D3D3D3');
+        HMI.Draw.circle(HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(7*HMI.WIDTH/8, 3*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        HMI.Draw.circle(7*HMI.WIDTH/8, 5*HMI.HEIGHT/8, HMI.WIDTH/20, 'black');
+        //HMI.Draw.circle(100, 100, 50, 'rgba(255,0,0,0.5)');
+        HMI.Draw.text('CaptiveAire HMI Emulator Test', HMI.WIDTH/2, 4*HMI.HEIGHT/5, 12, '#000');
 
         // listen for clicks
         window.addEventListener('click', function(e) {
             e.preventDefault();
-            POP.Input.set(e);
+            HMI.Input.set(e);
         }, false);
 
         // listen for touches
@@ -78,7 +82,7 @@ var POP = {
             // the event object has an array
             // named touches; we just want
             // the first touch
-            POP.Input.set(e.touches[0]);
+            HMI.Input.set(e.touches[0]);
         }, false);
         window.addEventListener('touchmove', function(e) {
             // we're not interested in this,
@@ -95,38 +99,38 @@ var POP = {
 
     resize: function() {
 
-        POP.currentHeight = window.innerHeight;
+        HMI.currentHeight = window.innerHeight;
         // resize the width in proportion
         // to the new height
-        POP.currentWidth = POP.currentHeight * POP.RATIO;
+        HMI.currentWidth = HMI.currentHeight * HMI.RATIO;
 
         // this will create some extra space on the
         // page, allowing us to scroll past
         // the address bar, thus hiding it.
-        if (POP.android || POP.ios) {
+        if (HMI.android || HMI.ios) {
             document.body.style.height = (window.innerHeight + 50) + 'px';
         }
 
         // set the new canvas style width and height
         // note: our canvas is still 320 x 480, but
         // we're essentially scaling it with CSS
-        POP.canvas.style.width = POP.currentWidth + 'px';
-        POP.canvas.style.height = POP.currentHeight + 'px';
-        POP.scale = POP.currentWidth / POP.WIDTH;
-        POP.offset.top = POP.canvas.offsetTop;
-        POP.offset.left = POP.canvas.offsetLeft;
+        HMI.canvas.style.width = HMI.currentWidth + 'px';
+        HMI.canvas.style.height = HMI.currentHeight + 'px';
+        HMI.scale = HMI.currentWidth / HMI.WIDTH;
+        HMI.offset.top = HMI.canvas.offsetTop;
+        HMI.offset.left = HMI.canvas.offsetLeft;
 
         // we need to sniff out Android and iOS
         // so that we can hide the address bar in
         // our resize function
-        POP.ua = navigator.userAgent.toLowerCase();
-        POP.android = POP.ua.indexOf('android') > -1 ? true : false;
-        POP.ios = ( POP.ua.indexOf('iphone') > -1 || POP.ua.indexOf('ipad') > -1 || POP.ua.indexOf('ipod') > -1 ) ? true : false;
+        HMI.ua = navigator.userAgent.toLowerCase();
+        HMI.android = HMI.ua.indexOf('android') > -1 ? true : false;
+        HMI.ios = ( HMI.ua.indexOf('iphone') > -1 || HMI.ua.indexOf('ipad') > -1 || HMI.ua.indexOf('ipod') > -1 ) ? true : false;
 
         // this will create some extra space on the
         // page, enabling us to scroll past
         // the address bar, thus hiding it.
-        if (POP.android || POP.ios) {
+        if (HMI.android || HMI.ios) {
             document.body.style.height = (window.innerHeight + 50) + 'px';
         }
 
@@ -141,52 +145,52 @@ var POP = {
 
 // abstracts various canvas operations into
 // standalone functions
-POP.Draw = {
+HMI.Draw = {
 
     clear: function() {
-        POP.ctx.clearRect(0, 0, POP.WIDTH, POP.HEIGHT);
+        HMI.ctx.clearRect(0, 0, HMI.WIDTH, HMI.HEIGHT);
     },
 
     rect: function(x, y, w, h, col) {
-        POP.ctx.fillStyle = col;
-        POP.ctx.fillRect(x, y, w, h);
+        HMI.ctx.fillStyle = col;
+        HMI.ctx.fillRect(x, y, w, h);
     },
 
     circle: function(x, y, r, col) {
-        POP.ctx.fillStyle = col;
-        POP.ctx.beginPath();
-        POP.ctx.arc(x + 5, y + 5, r, 0,  Math.PI * 2, true);
-        POP.ctx.closePath();
-        POP.ctx.fill();
+        HMI.ctx.fillStyle = col;
+        HMI.ctx.beginPath();
+        HMI.ctx.arc(x + 5, y + 5, r, 0,  Math.PI * 2, true);
+        HMI.ctx.closePath();
+        HMI.ctx.fill();
     },
 
     text: function(string, x, y, size, col) {
-        POP.ctx.font = 'bold '+size+'px Monospace';
-        POP.ctx.fillStyle = col;
-        POP.ctx.fillText(string, x, y);
+        HMI.ctx.font = 'bold '+size+'px Monospace';
+        HMI.ctx.fillStyle = col;
+        HMI.ctx.fillText(string, x, y);
     }
 
 };
 
 // + add this at the bottom of your code,
 // before the window.addEventListeners
-POP.Input = {
+HMI.Input = {
     x: 0,
     y: 0,
     tapped :false,
 
     set: function(data) {
-        this.x = (data.pageX - POP.offset.left) / POP.scale;
-        this.y = (data.pageY - POP.offset.top) / POP.scale;
+        this.x = (data.pageX - HMI.offset.left) / HMI.scale;
+        this.y = (data.pageY - HMI.offset.top) / HMI.scale;
         this.tapped = true;
 
-        POP.Draw.circle(this.x, this.y, 10, 'red');
+        HMI.Draw.circle(this.x, this.y, 10, 'red');
     }
 
 };
 
-window.addEventListener('load', POP.init, false);
-window.addEventListener('resize', POP.resize, false);
+window.addEventListener('load', HMI.init, false);
+window.addEventListener('resize', HMI.resize, false);
 </script>
 
 </body>
