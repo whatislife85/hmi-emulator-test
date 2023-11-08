@@ -94,7 +94,7 @@ var HMI = {
         }, false);
         window.addEventListener('touchend', function(e) {
             // as above
-            //e.preventDefault();
+            e.preventDefault();
         }, false);
         window.addEventListener('keydown', function(e) {
             // as above
@@ -295,18 +295,25 @@ HMI.Draw = {
         if(menuIndex == 0) { //check for beginning of option list
             HMI.Draw.rectFill((HMI.WIDTH/4), 1.275*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
             HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.screenColor);
-            HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.textColor);
-            HMI.Draw.text(currentMenu.MenuItems[menuIndex+2].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);        
+            if(menuIndex+1 < currentMenu.MenuItems.length) {
+                HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.textColor);
+            }
+            if (menuIndex+2 < currentMenu.MenuItems.length) {
+                HMI.Draw.text(currentMenu.MenuItems[menuIndex+2].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);        
+            }
         } else if(menuIndex == currentMenu.MenuItems.length-1) { //check for end of option list
             HMI.Draw.rectFill((HMI.WIDTH/4), 1.675*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
-            HMI.Draw.text(currentMenu.MenuItems[menuIndex-2].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.textColor);
+            if (menuIndex-2 >= 0) {
+                HMI.Draw.text(currentMenu.MenuItems[menuIndex-2].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.textColor);
+            }
             HMI.Draw.text(currentMenu.MenuItems[menuIndex-1].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.textColor);
             HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.screenColor);
         } else {
             HMI.Draw.rectFill((HMI.WIDTH/4), 1.475*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
             HMI.Draw.text(currentMenu.MenuItems[menuIndex-1].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.textColor);
             HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.screenColor);
-            HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);
+            if(menuIndex+1 < currentMenu.MenuItems.length) {HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);
+            }
         }
     },
 
