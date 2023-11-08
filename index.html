@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 <style type="text/css">
-body { margin: 0; padding: 0; background: #000000;}
+body { margin: 0; padding: 0; background: #000;}
 canvas { display: block; margin: 0 auto; background: #444444; }
 </style>
 
@@ -42,8 +42,12 @@ var HMI = {
     // in relation to the screen
     offset: {top: 0, left: 0},
 
-    menuTree: DoasMenu.MenuItems[0],
-    menuPath: [],
+    menuTree: DoasMenu,
+    menuPath: [DoasMenu],
+    menuIndex: 0,
+    textColor: '#000',
+    screenColor: '#D3D3D3',
+
 
     init: function() {
 
@@ -66,13 +70,12 @@ var HMI = {
         // we're ready to resize
         HMI.resize();
 
-        HMI.Draw.drawHmi();
-        HMI.Draw.text('IDLE', (8.5*HMI.WIDTH/20), HMI.HEIGHT/2, 54, '#000');
+        HMI.Draw.drawHomeScreen();
 
         // listen for clicks
         window.addEventListener('click', function(e) {
             e.preventDefault();
-            HMI.Input.set([e]);
+            HMI.Input.touchFunc([e]);
         }, false);
 
         // listen for touches
@@ -80,7 +83,7 @@ var HMI = {
             //e.preventDefault();
             // the event object has an array
             // named touches (for multi-touch);
-            HMI.Input.set(e.touches);
+            HMI.Input.touchFunc(e.touches);
         }, false);
         window.addEventListener('touchmove', function(e) {
             // we're not interested in this,
@@ -92,6 +95,11 @@ var HMI = {
         window.addEventListener('touchend', function(e) {
             // as above
             //e.preventDefault();
+        }, false);
+        window.addEventListener('keydown', function(e) {
+            // as above
+            //e.preventDefault();
+            HMI.Input.keyFunc(e);
         }, false);
     },
 
@@ -142,7 +150,6 @@ var HMI = {
 };
 
 // FUN FUNCTIONS BEGIN //////////////////////////
-HMI.currentMenu = HMI.menuTree
 btnXY = [
   [(HMI.WIDTH)/8, 3*(HMI.HEIGHT)/8], 
   [(HMI.WIDTH/8), 5*(HMI.HEIGHT/8)], 
@@ -152,37 +159,53 @@ btnXY = [
 btnR = HMI.WIDTH/20;
 
 function upBtnPressed() {
-  console.log("up")
+    if(HMI.menuIndex > 0 && HMI.menuPath.length > 1) { //check for beginning of the option list and beginning of menu tree
+        HMI.menuIndex--;
+        HMI.Draw.drawHmiAndMenuText(HMI.menuPath[HMI.menuPath.length-1], HMI.menuIndex);
+    }
+    console.log("up")
 }
 function downBtnPressed() {
-  console.log("down")
+    if(HMI.menuIndex < (HMI.menuPath[HMI.menuPath.length-1].MenuItems.length-1) && HMI.menuPath.length > 1) { //check for end of the option list and beginning of menu tree
+        HMI.menuIndex++;
+        HMI.Draw.drawHmiAndMenuText(HMI.menuPath[HMI.menuPath.length-1], HMI.menuIndex);
+    }
+    console.log("down")
 }
 function backBtnPressed() {
-  console.log("back")
+    if(HMI.menuPath.length > 2) { //check for the beginning of the menu tree
+        HMI.menuPath.pop();
+        var currentMenu = HMI.menuPath[HMI.menuPath.length-1];
+        HMI.menuIndex = 0;
+        HMI.Draw.drawHmiAndMenuText(currentMenu, HMI.menuIndex);
+    } else if(HMI.menuPath.length == 2) {
+        HMI.menuPath.pop();
+        var currentMenu = HMI.menuPath[HMI.menuPath.length-1];
+        HMI.menuIndex = 0;
+        HMI.Draw.drawHomeScreen();
+    }
+    console.log("back")
 }
 function enterBtnPressed() {
-  console.log("enter")
-
-  //HMI.Draw.drawHmi();
-  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
-  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
-  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
-  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
-  //HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
-  //HMI.currentMenu = HMI.currentMenu.MenuItems[0];
-  //console.log(HMI.currentMenu);
+    var menuToPush = HMI.menuPath[HMI.menuPath.length-1].MenuItems[HMI.menuIndex]
+    if(menuToPush.MenuItemType != 2 && HMI.menuPath.length > 1) { //check for the beginning and end of menu tree
+        HMI.menuPath.push(menuToPush);
+        var currentMenu = HMI.menuPath[HMI.menuPath.length-1];
+        HMI.menuIndex = 0;
+        HMI.Draw.drawHmiAndMenuText(currentMenu, HMI.menuIndex);
+    }
+    console.log("enter")
 }
 
 function topBtnsPressed() {
-  HMI.Draw.drawHmi();
-  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 0.97*HMI.HEIGHT/3, 34, '#000');
-  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.27*HMI.HEIGHT/3, 34, '#000');
-  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.57*HMI.HEIGHT/3, 34, '#000');
-  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 1.87*HMI.HEIGHT/3, 34, '#000');
-  HMI.Draw.text(HMI.currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(HMI.currentMenu.Text).length), 2.17*HMI.HEIGHT/3, 34, '#000');
-  //HMI.currentMenu = HMI.currentMenu.MenuItems[0];
-  //console.log(HMI.currentMenu);
-  console.log("top buttons pressed");
+    var menuToPush = HMI.menuPath[HMI.menuPath.length-1].MenuItems[HMI.menuIndex]
+    if(HMI.menuPath.length == 1) { //check for the beginning of the menu tree
+        HMI.menuPath.push(menuToPush);
+        var currentMenu = HMI.menuPath[HMI.menuPath.length-1];
+        HMI.menuIndex = 0;
+        HMI.Draw.drawHmiAndMenuText(currentMenu, HMI.menuIndex);
+    }
+    console.log("top buttons pressed");
 }
 
 function btnLogic(btnsPressed) {
@@ -217,9 +240,15 @@ HMI.Draw = {
         HMI.ctx.clearRect(0, 0, HMI.WIDTH, HMI.HEIGHT);
     },
 
-    rect: function(x, y, w, h, col) {
+    rectFill: function(x, y, w, h, col) {
         HMI.ctx.fillStyle = col;
         HMI.ctx.fillRect(x, y, w, h);
+    },
+
+    rectStroke: function(x, y, w, h, col) {
+        HMI.ctx.fillStyle = col;
+        HMI.ctx.lineWidth = 5;
+        HMI.ctx.strokeRect(x, y, w, h);
     },
 
     circle: function(x, y, r, col) {
@@ -238,14 +267,55 @@ HMI.Draw = {
 
     drawHmi: function() {
         HMI.Draw.clear();
-        HMI.Draw.rect(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, '#D3D3D3');
-        HMI.Draw.circle(btnXY[0][0], btnXY[0][1], btnR, 'black');
-        HMI.Draw.circle(btnXY[1][0], btnXY[1][1], btnR, 'black');
-        HMI.Draw.circle(btnXY[2][0], btnXY[2][1], btnR, 'black');
-        HMI.Draw.circle(btnXY[3][0], btnXY[3][1], btnR, 'black');
-        HMI.Draw.text('CaptiveAire HMI Emulator Test', HMI.WIDTH/2, 4*HMI.HEIGHT/5, 14, '#000');
-    }
+        HMI.Draw.rectFill(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, HMI.screenColor);
+        HMI.Draw.rectStroke(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, HMI.textColor);
+        HMI.Draw.circle(btnXY[0][0], btnXY[0][1], btnR, HMI.textColor);
+        HMI.Draw.circle(btnXY[1][0], btnXY[1][1], btnR, HMI.textColor);
+        HMI.Draw.circle(btnXY[2][0], btnXY[2][1], btnR, HMI.textColor);
+        HMI.Draw.circle(btnXY[3][0], btnXY[3][1], btnR, HMI.textColor);
+        HMI.Draw.text('CaptiveAire HMI Emulator v1.0', HMI.WIDTH/4, 4*HMI.HEIGHT/5, 14, HMI.textColor);
 
+        //draw upper 2 buttons
+        HMI.Draw.rectStroke((HMI.WIDTH/4), (HMI.HEIGHT/4), (HMI.WIDTH/4), 38, HMI.textColor)
+        HMI.Draw.rectStroke((HMI.WIDTH/2), (HMI.HEIGHT/4), (HMI.WIDTH/4), 38, HMI.textColor)
+        HMI.Draw.text(" UP", (HMI.WIDTH/4), 0.94*HMI.HEIGHT/3, 34, HMI.textColor);
+        HMI.Draw.text(" BACK", (HMI.WIDTH/2), 0.94*HMI.HEIGHT/3, 34, HMI.textColor);
+        //draw lower 2 buttons
+        HMI.Draw.rectStroke((HMI.WIDTH/4), (3*HMI.HEIGHT/4)-38, (HMI.WIDTH/4), 38, HMI.textColor)
+        HMI.Draw.rectStroke((HMI.WIDTH/2), (3*HMI.HEIGHT/4)-38, (HMI.WIDTH/4), 38, HMI.textColor)
+        HMI.Draw.text(" DOWN", (HMI.WIDTH/4), 2.2*HMI.HEIGHT/3, 34, HMI.textColor);
+        HMI.Draw.text(" ENTER", (HMI.WIDTH/2), 2.2*HMI.HEIGHT/3, 34, HMI.textColor);
+    },
+
+    drawHmiAndMenuText: function(currentMenu, menuIndex) {
+        //draw screen menu text
+        HMI.Draw.drawHmi();
+        HMI.Draw.text(currentMenu.Text, (HMI.WIDTH/2)-(9.5*String(currentMenu.Text).length), 1.25*HMI.HEIGHT/3, 34, HMI.textColor);
+
+        if(menuIndex == 0) { //check for beginning of option list
+            HMI.Draw.rectFill((HMI.WIDTH/4), 1.275*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.screenColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex+2].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);        
+        } else if(menuIndex == currentMenu.MenuItems.length-1) { //check for end of option list
+            HMI.Draw.rectFill((HMI.WIDTH/4), 1.675*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex-2].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex-1].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.screenColor);
+        } else {
+            HMI.Draw.rectFill((HMI.WIDTH/4), 1.475*HMI.HEIGHT/3, (HMI.WIDTH/2), 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex-1].Text, (HMI.WIDTH/4)+34, 1.45*HMI.HEIGHT/3, 34, HMI.textColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex].Text, (HMI.WIDTH/4)+34, 1.65*HMI.HEIGHT/3, 34, HMI.screenColor);
+            HMI.Draw.text(currentMenu.MenuItems[menuIndex+1].Text, (HMI.WIDTH/4)+34, 1.85*HMI.HEIGHT/3, 34, HMI.textColor);
+        }
+    },
+
+    drawHomeScreen: function() {
+        HMI.Draw.drawHmi();
+        HMI.Draw.rectFill(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, HMI.screenColor);
+        HMI.Draw.rectStroke(HMI.WIDTH/4, HMI.HEIGHT/4, HMI.WIDTH/2, HMI.HEIGHT/2, HMI.textColor);
+        HMI.Draw.text('IDLE', (8.5*HMI.WIDTH/20), HMI.HEIGHT/2, 54, HMI.textColor);
+    }
 };
 
 // + add this at the bottom of your code,
@@ -256,8 +326,7 @@ HMI.Input = {
     tapped :false,
 
     btnsPressed: [],
-    set: function(data) {
-      //console.log(data);
+    touchFunc: function(data) {
       for(j = 0; j < data.length; j++) {
         this.x = (data[j].pageX - HMI.offset.left) / HMI.scale;
         this.y = (data[j].pageY - HMI.offset.top) / HMI.scale;
@@ -271,6 +340,9 @@ HMI.Input = {
       }
       btnLogic(this.btnsPressed);
       this.btnsPressed = [];
+    },
+    keyFunc: function(data) {
+        if(data.key == "Escape") {btnLogic([0, 2]);}
     }
 };
 
