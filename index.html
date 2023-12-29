@@ -21,7 +21,7 @@ canvas { display: block; margin: 0 auto; background: #444444; }
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
 <script type="text/javascript" src="DoasMenu.txt"></script>
 <script>
-// namespace our game
+// namespace the emulator
 var HMI = {
 
     // set up some initial values
@@ -60,7 +60,7 @@ var HMI = {
         HMI.canvas = document.getElementsByTagName('canvas')[0];
         // setting this is important
         // otherwise the browser will
-        // default to 320 x 200
+        // default to 800 x 480
         HMI.canvas.width = HMI.WIDTH;
         HMI.canvas.height = HMI.HEIGHT;
         // the canvas context enables us to
@@ -118,7 +118,7 @@ var HMI = {
         }
 
         // set the new canvas style width and height
-        // note: our canvas is still 320 x 480, but
+        // note: our canvas is still 800 x 480, but
         // we're essentially scaling it with CSS
         HMI.canvas.style.width = HMI.currentWidth + 'px';
         HMI.canvas.style.height = HMI.currentHeight + 'px';
@@ -325,8 +325,6 @@ HMI.Draw = {
     }
 };
 
-// + add this at the bottom of your code,
-// before the window.addEventListeners
 HMI.Input = {
     x: 0,
     y: 0,
@@ -355,6 +353,9 @@ HMI.Input = {
 
 window.addEventListener('load', HMI.init, false);
 window.addEventListener('resize', HMI.resize, false);
+
+//site navigation instructions
+alert("To enter the menu tree, press [Esc] on keyboard or simultaneously touch the top two buttons on touch screen. From there click/touch the four circular buttons to navigate the menu.");
 
 </script>
 
